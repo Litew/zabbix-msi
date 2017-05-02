@@ -3,18 +3,18 @@
   Zabbix Agent Windows Installer Package
   Author: Ryan Armstrong <ryan@cavaliercoder.com>
   
-  This WXS file targets Wix Toolkit v.3.8.1128
+  This WXS file targets Wix Toolkit v.3.11.0.1701
 
   To build this package the Zabbix Windows Agent v2.2.1 binaries are required to be extracted into 'src/' subdirectory (or the path defined in SrcPath).
       
   The agent binaries are available from the following URL:
-  http://www.zabbix.com/downloads/2.2.1/zabbix_agents_2.2.1.win.zip
+  http://www.zabbix.com/downloads/3.2.0/zabbix_agents_3.2.0.win.zip
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <?define AgentName = "Zabbix Agent" ?>
-  <?define AgentVersion = "2.2.1.40801" ?>
+  <?define AgentVersion = "3.2.0.62444" ?>
   <?define SrcPath = "src" ?>
-  
+
   <!-- Which platform are we building for ? -->
   <?if $(var.Platform) = x64 ?>
     <!-- 64 Bit Platform -->
