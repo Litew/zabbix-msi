@@ -11,7 +11,7 @@
   http://www.zabbix.com/downloads/3.2.0/zabbix_agents_3.2.0.win.zip
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <?define AgentName = "Zabbix Agent" ?>
+  <?define AgentName = "zabbix-agent" ?>
   <?define AgentVersion = "3.2.0.62444" ?>
   <?define SrcPath = "src" ?>
 
@@ -19,16 +19,16 @@
   <?if $(var.Platform) = x64 ?>
     <!-- 64 Bit Platform -->
     <?define Win64 ?>
-    <?define ProductName = "$(var.AgentName) (64bit)" ?>
+    <?define ProductName = "$(var.AgentName) (x64)" ?>
     <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
     <?define BinDir = "win64" ?>
   <?else ?>
     <!-- 32 Bit Platform -->
-    <?define ProductName = "$(var.AgentName) (32bit)" ?>
+    <?define ProductName = "$(var.AgentName) (x86)" ?>
     <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
     <?define BinDir = "win32" ?>
   <?endif ?>
-  <Product Id="*" Name="$(var.ProductName)" Version="$(var.AgentVersion)" Manufacturer="Zabbix SIA" UpgradeCode="30e74e6f-754f-404d-903c-68e0d614939c" Language="1033">
+  <Product Id="*" Name="$(var.ProductName)" Version="$(var.AgentVersion)" Manufacturer="Zabbix SIA" UpgradeCode="0D311090-FA61-4CAF-979E-6E400F5F6FEC" Language="1049">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" InstallPrivileges="elevated"/>
     
     <!-- Prevent 32bit MSI installing on 64bit systems -->
@@ -62,7 +62,7 @@
     <!-- Folder structure -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="$(var.PlatformProgramFilesFolder)">
-        <Directory Id="INSTALLFOLDER" Name="Zabbix Agent">
+        <Directory Id="INSTALLFOLDER" Name="zabbix-agent">
           <Directory Id="BinariesFolder" Name="bin">
             <Directory Id="ArchBinariesFolder" Name="$(var.BinDir)" />
           </Directory>
