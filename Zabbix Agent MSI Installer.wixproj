@@ -30,10 +30,15 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <WixVariables>
     </WixVariables>
+    <Cultures>en-US;ru-RU</Cultures>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release x86_64|x64' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <Cultures>en-US;ru-RU</Cultures>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release x86|x64' ">
+    <Cultures>en-US;ru-RU</Cultures>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Zabbix Agent MSI Installer.wxs" />
