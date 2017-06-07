@@ -52,3 +52,6 @@ x64/
 *.backup
 ~*
 *.msi
+/src/conf/zabbix_agentd.win.conf
+/Microsoft.Deployment.WindowsInstaller.dll
+/SearchAndReplace.CA.dll

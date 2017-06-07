@@ -12,7 +12,7 @@
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <?define AgentName = "zabbix-agent" ?>
-  <?define AgentVersion = "3.2.0.62444" ?>
+  <?define AgentVersion = "3.2.7.1" ?>
   <?define SrcPath = "src" ?>
 
   <!-- Which platform are we building for ? -->
@@ -56,6 +56,7 @@
       <ComponentGroupRef Id="EnvVars" />
       <ComponentGroupRef Id="Binaries" />
       <ComponentGroupRef Id="Configuration" />
+      <ComponentGroupRef Id="Encryption" />
       <ComponentGroupRef Id="Scripts" />
     </Feature>
     
@@ -66,7 +67,9 @@
           <Directory Id="BinariesFolder" Name="bin">
             <Directory Id="ArchBinariesFolder" Name="$(var.BinDir)" />
           </Directory>
-          <Directory Id="ConfigurationFolder" Name="conf" />
+          <Directory Id="ConfigurationFolder" Name="conf">
+            <Directory Id="EncryptionFolder" Name="ssl" />
+          </Directory>
           <Directory Id="ScriptsFolder" Name="scripts">
             <Directory Id="ScriptsIncludeFolder" Name="include" />
           </Directory>
@@ -103,8 +106,17 @@
     <!-- Agent Configuration Components -->
     <ComponentGroup Id="Configuration" Directory="ConfigurationFolder">
       <!-- Agent Configuration File -->
-      <Component Id="AgentConfiguration" Guid="*">
+      <Component Id="AgentConfiguration" Guid="{EC7CBFDA-F658-4474-BC92-CABAEE33CB20}">
         <File Id="AgentConfigurationFile" Name="zabbix_agentd.win.conf" Source="$(var.SrcPath)\conf\zabbix_agentd.win.conf"/>
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="Encryption" Directory="EncryptionFolder">
+      <!-- Agent Configuration File -->
+      <Component Id="AgentEncryption" Guid="{A06C936D-5A13-41FA-877A-B4C53D5A90DE}">
+        <File Id="AgentCAFile" Name="ca.crt" Source="$(var.SrcPath)\conf\ssl\ca.crt"/>
+        <File Id="AgentCRTFile" Name="zbx-agent.crt" Source="$(var.SrcPath)\conf\ssl\zbx-agent.crt"/>
+        <File Id="AgentKeyFile" Name="zbx-agent.key" Source="$(var.SrcPath)\conf\ssl\zbx-agent.key"/>
       </Component>
     </ComponentGroup>
 
@@ -119,9 +131,41 @@
       </Component>
       -->
     </ComponentGroup>
+    
+    <CustomTable Id="SearchAndReplace">
+      <Column Id="Id" Type="string" Category="Identifier" PrimaryKey="yes"/>
+      <Column Id="File" Type="string"/>
+      <Column Id="Search" Type="string"/>
+      <Column Id="Replace" Type="string"/>
 
+      <Row>
+        <Data Column="Id">AgentTLSCAFile</Data>
+        <Data Column="File">[INSTALLFOLDER]conf\zabbix_agentd.win.conf</Data>
+        <Data Column="Search">TLSCAFile=</Data>
+        <Data Column="Replace">TLSCAFile=[INSTALLFOLDER]conf\ssl\ca.crt</Data>
+      </Row>
+      <Row>
+        <Data Column="Id">AgentTLSCertFile</Data>
+        <Data Column="File">[INSTALLFOLDER]conf\zabbix_agentd.win.conf</Data>
+        <Data Column="Search">TLSCertFile=</Data>
+        <Data Column="Replace">TLSCertFile=[INSTALLFOLDER]conf\ssl\zbx-agent.crt</Data>
+      </Row>
+      <Row>
+        <Data Column="Id">AgentTLSKeyFile</Data>
+        <Data Column="File">[INSTALLFOLDER]conf\zabbix_agentd.win.conf</Data>
+        <Data Column="Search">TLSKeyFile=</Data>
+        <Data Column="Replace">TLSKeyFile=[INSTALLFOLDER]conf\ssl\zbx-agent.key</Data>
+      </Row>
+</CustomTable>
+      
+    <Binary Id="SearchAndReplaceDLL" SourceFile="SearchAndReplace.CA.dll" />
+    
     <!-- Shared Script (Includes) Components -->
     <ComponentGroup Id="SharedScripts" Directory="ScriptsIncludeFolder" />
+
+    <!-- SearchAndReplace Actions -->
+    <CustomAction Id="SearchAndReplaceInit" BinaryKey="SearchAndReplaceDLL" DllEntry="SearchAndReplaceInit" Execute="immediate"/>
+    <CustomAction Id="SearchAndReplaceExec" BinaryKey="SearchAndReplaceDLL" DllEntry="SearchAndReplaceExec" Execute="deferred" Impersonate="no"/>
     
     <!-- Install Service Actions -->
     <CustomAction Id="InstallService" Directory="ArchBinariesFolder" ExeCommand="&quot;[#ZabbixAgentBin]&quot; --install --config &quot;[#AgentConfigurationFile]&quot;" Execute="deferred" Return="check" Impersonate="no" />
@@ -131,7 +175,9 @@
     <CustomAction Id="StopService" Directory="ArchBinariesFolder" ExeCommand="&quot;[#ZabbixAgentBin]&quot; --stop --config &quot;[#AgentConfigurationFile]&quot;" Execute="deferred" Return="ignore" Impersonate="no" />
     <CustomAction Id="RemoveService" Directory="ArchBinariesFolder" ExeCommand="&quot;[#ZabbixAgentBin]&quot; --uninstall --config &quot;[#AgentConfigurationFile]&quot;" Execute="deferred" Return="ignore" Impersonate="no" />
 
-    <InstallExecuteSequence>      
+    <InstallExecuteSequence>
+      <Custom Action="SearchAndReplaceInit" Before="InstallService">NOT Installed</Custom>
+      <Custom Action="SearchAndReplaceExec" Before="InstallService">NOT Installed</Custom>
       <!-- Install Service Sequence -->
       <Custom Action="InstallService" After="InstallFiles">NOT Installed</Custom>
       <Custom Action="StartService" After="InstallService">NOT Installed</Custom>
