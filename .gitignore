@@ -1,5 +1,5 @@
 # Zabbix Agent binaries
-src/
+/Zabbix Agent MSI Installer/src
 
 # .Net Project incidentals
 *.[Oo]bj
@@ -52,6 +52,5 @@ x64/
 *.backup
 ~*
 *.msi
-/src/conf/zabbix_agentd.win.conf
-/Microsoft.Deployment.WindowsInstaller.dll
-/SearchAndReplace.CA.dll
+/Zabbix Agent MSI Installer/SearchAndReplace.CA.dll
+/Zabbix Agent MSI Installer/Microsoft.Deployment.WindowsInstaller.dll
